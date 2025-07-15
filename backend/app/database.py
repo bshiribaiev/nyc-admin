@@ -129,7 +129,6 @@ class AsyncDatabasePool:
         self.pool: Optional[asyncpg.Pool] = None
         
     async def initialize(self):
-        """Initialize connection pool"""
         try:
             self.pool = await asyncpg.create_pool(
                 **DATABASE_CONFIG,
@@ -143,14 +142,13 @@ class AsyncDatabasePool:
             raise
             
     async def close(self):
-        """Close connection pool"""
         if self.pool:
             await self.pool.close()
             logger.info("Database pool closed")
             
+    # Acquire connection from the pool        
     @asynccontextmanager
     async def acquire(self):
-        """Acquire connection from pool"""
         if not self.pool:
             raise RuntimeError("Database pool not initialized")
             
@@ -158,16 +156,15 @@ class AsyncDatabasePool:
             yield connection
             
     async def execute(self, query: str, *args):
-        """Execute a query"""
         async with self.acquire() as connection:
             return await connection.execute(query, *args)
-            
+    
+    # Fetch multiple rows        
     async def fetch(self, query: str, *args):
-        """Fetch multiple rows"""
         async with self.acquire() as connection:
             return await connection.fetch(query, *args)
-            
+        
+    # Fetch single row        
     async def fetchrow(self, query: str, *args):
-        """Fetch single row"""
         async with self.acquire() as connection:
             return await connection.fetchrow(query, *args)

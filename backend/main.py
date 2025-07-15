@@ -19,16 +19,13 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-
 @click.group()
 def cli():
-    """NYC Admin Code Q&A System CLI"""
     pass
 
 
-@cli.command()
+@cli.command() # registering subcommand
 def init_db():
-    """Initialize database schema"""
     logger.info("Initializing database...")
     
     db = DatabaseManager()
@@ -38,11 +35,9 @@ def init_db():
     
     logger.info("Database initialized successfully")
 
-
 @cli.command()
 @click.option('--full', is_flag=True, help='Run full scrape')
 def scrape(full: bool):
-    """Scrape NYC Admin Code website"""
     logger.info("Starting scraper...")
     
     db = DatabaseManager()
@@ -50,7 +45,6 @@ def scrape(full: bool):
     
     try:
         scraper = NYCAdminCodeScraper(db)
-        
         if full:
             scraper.run_full_scrape()
         else:
@@ -65,7 +59,6 @@ def scrape(full: bool):
 @click.option('--all', is_flag=True, help='Process all sections')
 @click.option('--section-id', type=int, help='Process specific section')
 def embeddings(all: bool, section_id: Optional[int]):
-    """Generate embeddings for sections"""
     logger.info("Generating embeddings...")
     
     db = DatabaseManager()
@@ -84,13 +77,11 @@ def embeddings(all: bool, section_id: Optional[int]):
     finally:
         db.close()
 
-
 @cli.command()
 @click.option('--host', default=API_CONFIG['host'], help='Host to bind')
 @click.option('--port', default=API_CONFIG['port'], help='Port to bind')
 @click.option('--workers', default=API_CONFIG['workers'], help='Number of workers')
 def serve(host: str, port: int, workers: int):
-    """Start the API server"""
     logger.info(f"Starting API server on {host}:{port}")
     
     uvicorn.run(
@@ -100,7 +91,6 @@ def serve(host: str, port: int, workers: int):
         workers=workers,
         reload=False
     )
-
 
 @cli.command()
 @click.argument('question')
@@ -133,7 +123,6 @@ async def ask(question: str):
             
     finally:
         await db_pool.close()
-
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "ask":

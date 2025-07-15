@@ -1,17 +1,15 @@
 import logging
-import os
-from typing import List, Optional, Union
+from typing import List, Union
 import numpy as np
 
 from config.settings import EMBEDDING_CONFIG
 from app.database import DatabaseManager
+from sentence_transformers import SentenceTransformer
 
 logger = logging.getLogger(__name__)
 
 
-class FreeEmbeddingGenerator:
-    """Generate embeddings using free, local models"""
-    
+class EmbeddingGenerator:
     def __init__(self, db_manager: DatabaseManager = None):
         self.db = db_manager
         self.chunk_size = EMBEDDING_CONFIG.get("chunk_size", 1000)
@@ -22,7 +20,6 @@ class FreeEmbeddingGenerator:
         
     def _initialize_model(self):
         try:
-            from sentence_transformers import SentenceTransformer
             model_name = "all-MiniLM-L6-v2"  
             logger.info(f"Loading Sentence Transformer model: {model_name}")
             return SentenceTransformer(model_name)
@@ -30,7 +27,6 @@ class FreeEmbeddingGenerator:
             logger.warning("Sentence Transformers not available")
         
     def chunk_text(self, text: str) -> List[str]:
-        """Split text into overlapping chunks"""
         if not text:
             return []
             
@@ -58,7 +54,6 @@ class FreeEmbeddingGenerator:
         return chunks
         
     def generate_embeddings(self, texts: Union[str, List[str]]) -> np.ndarray:
-        """Generate embeddings for text(s)"""
         if isinstance(texts, str):
             texts = [texts]
             
@@ -78,7 +73,6 @@ class FreeEmbeddingGenerator:
         # TF-IDF fallback
         else:
             # For TF-IDF, we need to fit on all documents first
-            # This is a simplified approach
             if not hasattr(self.model, 'vocabulary_'):
                 # Need to fit the model first
                 logger.warning("TF-IDF model not fitted, using simple hash")
@@ -87,7 +81,6 @@ class FreeEmbeddingGenerator:
             return self.model.transform(texts).toarray()
             
     def get_embedding_dimension(self) -> int:
-        """Get the dimension of embeddings"""
         if hasattr(self.model, 'get_sentence_embedding_dimension'):
             return self.model.get_sentence_embedding_dimension()
         elif hasattr(self.model, 'embed'):
@@ -96,7 +89,6 @@ class FreeEmbeddingGenerator:
             return 384  # TF-IDF or default
             
     def process_section(self, section_id: int):
-        """Process all chunks for a section"""
         if not self.db:
             raise RuntimeError("Database manager not configured")
             

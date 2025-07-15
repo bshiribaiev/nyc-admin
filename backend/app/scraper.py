@@ -3,7 +3,6 @@ import time
 import hashlib
 import logging
 from typing import List, Dict, Optional
-from datetime import datetime
 from urllib.parse import urljoin
 
 import requests
@@ -14,10 +13,7 @@ from app.database import DatabaseManager
 
 logger = logging.getLogger(__name__)
 
-
 class NYCAdminCodeScraper:
-    """Scraper for NYC Administrative Code website"""
-    
     def __init__(self, db_manager: DatabaseManager):
         self.db = db_manager
         self.base_url = SCRAPE_CONFIG["base_url"]
@@ -25,7 +21,6 @@ class NYCAdminCodeScraper:
         self.session = self._create_session()
         
     def _create_session(self) -> requests.Session:
-        """Create HTTP session with headers"""
         session = requests.Session()
         session.headers.update({
             'User-Agent': 'NYC Admin Code Scraper (Educational/Research)',
@@ -35,7 +30,6 @@ class NYCAdminCodeScraper:
         return session
         
     def scrape_table_of_contents(self) -> List[Dict[str, str]]:
-        """Scrape the main table of contents"""
         logger.info(f"Scraping table of contents from {self.base_url}")
         
         try:
@@ -72,7 +66,6 @@ class NYCAdminCodeScraper:
         return sections
         
     def scrape_section(self, section_info: Dict[str, str]) -> Optional[Dict[str]]:
-        """Scrape individual section content"""
         section_number = section_info['section_number']
         url = section_info['url']
         
@@ -115,7 +108,6 @@ class NYCAdminCodeScraper:
         }
         
     def _extract_cross_references(self, content: str) -> List[str]:
-        """Extract references to other sections"""
         # Pattern to match section references
         patterns = [
             r'(?:§|section)\s*([\d\-\.]+)',
@@ -135,10 +127,8 @@ class NYCAdminCodeScraper:
         return list(references)
         
     def save_section(self, section_data: Dict[str]) -> Optional[int]:
-        """Save section to database"""
         try:
             with self.db.get_cursor() as cursor:
-                # Check if section exists
                 cursor.execute("""
                     SELECT id, content_hash FROM sections 
                     WHERE section_number = %s
@@ -189,7 +179,6 @@ class NYCAdminCodeScraper:
             return None
             
     def run_full_scrape(self):
-        """Run complete scraping process"""
         logger.info("Starting full scrape")
         
         # Record scrape start

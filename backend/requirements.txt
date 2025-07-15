@@ -7,9 +7,8 @@ lxml==4.9.3
 psycopg2-binary==2.9.9
 asyncpg==0.29.0
 
-# FREE Embeddings Option
 sentence-transformers==2.2.2
-torch==2.0.1  # Required by sentence-transformers
+torch==2.0.1  
 transformers==4.30.0
 
 # Alternative: Cohere (very cheap)
