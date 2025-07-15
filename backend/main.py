@@ -95,7 +95,6 @@ def serve(host: str, port: int, workers: int):
 @cli.command()
 @click.argument('question')
 async def ask(question: str):
-    """Ask a question from the command line"""
     db_pool = AsyncDatabasePool()
     await db_pool.initialize()
     
