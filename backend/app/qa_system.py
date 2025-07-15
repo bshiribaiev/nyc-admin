@@ -1,42 +1,52 @@
 import logging
 from typing import List, Dict, Optional
-import numpy as np
-from openai import OpenAI
+import google.generativeai as genai
 
-from config.settings import OPENAI_API_KEY, EMBEDDING_CONFIG
+from config.settings import GEMINI_API_KEY
 
 logger = logging.getLogger(__name__)
 
 
 class QASystem:
-    """Question answering system using embeddings and LLM"""
-    
     def __init__(self, db_pool):
         self.db_pool = db_pool
-        self.client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
         
+        # Initialize Gemini
+        if GEMINI_API_KEY:
+            genai.configure(api_key=GEMINI_API_KEY)
+            self.model = genai.GenerativeModel('gemini-2.0-flash')
+            self.embedding_model = 'models/embedding-001'
+        else:
+            self.model = None
+            self.embedding_model = None
+            logger.warning("Gemini API key not configured")
+    
     async def search_similar_sections(
         self, 
         query: str, 
         top_k: int = 5
     ) -> List[Dict]:
         """Search for sections similar to the query"""
-        if not self.client:
+        
+        if not GEMINI_API_KEY:
             # Fallback to keyword search
             return await self._keyword_search(query, top_k)
-            
-        # Generate query embedding
+        
+        # Generate query embedding using Gemini
         try:
-            response = self.client.embeddings.create(
-                model=EMBEDDING_CONFIG["model"],
-                input=query
+            # Gemini embeddings API
+            result = genai.embed_content(
+                model=self.embedding_model,
+                content=query,
+                task_type="retrieval_query",  # Optimized for search queries
             )
-            query_embedding = response.data[0].embedding
-        except Exception as e:
-            logger.error(f"Error generating query embedding: {e}")
-            return await self._keyword_search(query, top_k)
+            query_embedding = result['embedding']
             
-        # Search similar vectors
+        except Exception as e:
+            logger.error(f"Error generating Gemini embedding: {e}")
+            return await self._keyword_search(query, top_k)
+        
+        # Search similar vectors in database
         async with self.db_pool.acquire() as conn:
             results = await conn.fetch("""
                 SELECT DISTINCT ON (s.id)
@@ -50,7 +60,7 @@ class QASystem:
             """, query_embedding, top_k)
             
         return [dict(row) for row in results]
-        
+    
     async def _keyword_search(
         self, 
         query: str, 
@@ -69,58 +79,57 @@ class QASystem:
             """, query, top_k)
             
         return [dict(row) for row in results]
-        
+    
     async def generate_answer(
         self, 
         query: str, 
         context_sections: List[Dict]
     ) -> str:
-        """Generate answer using LLM"""
-        if not self.client:
+        """Generate answer using Gemini"""
+        
+        if not self.model:
             # Fallback to simple formatting
             return self._format_sections(context_sections)
-            
-        # Build context
+        
+        # Build context from retrieved sections
         context = "\n\n".join([
             f"Section {s['section_number']}: {s['title']}\n{s['content'][:1500]}..."
             for s in context_sections
         ])
         
-        try:
-            response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": """You are an expert on NYC Administrative Code. 
-                        Answer questions based only on the provided context. 
-                        Always cite specific section numbers."""
-                    },
-                    {
-                        "role": "user",
-                        "content": f"""Context:
+        # Create prompt for Gemini
+        prompt = f"""You are an expert on NYC Administrative Code. 
+Answer the question based ONLY on the provided context. 
+Always cite specific section numbers when referencing the code.
+
+Context from NYC Administrative Code:
 {context}
 
 Question: {query}
 
-Provide a clear, accurate answer with section citations."""
-                    }
-                ],
-                temperature=0.3,
-                max_tokens=1000
+Provide a clear, accurate answer with section citations. If the answer cannot be found in the provided context, say so."""
+        
+        try:
+            # Generate response using Gemini
+            response = self.model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    temperature=0.3,  # Lower temperature for factual responses
+                    max_output_tokens=1000,
+                )
             )
             
-            return response.choices[0].message.content
+            return response.text
             
         except Exception as e:
-            logger.error(f"Error generating answer: {e}")
+            logger.error(f"Error generating Gemini answer: {e}")
             return self._format_sections(context_sections)
-            
+    
     def _format_sections(self, sections: List[Dict]) -> str:
         """Format sections as a simple answer"""
         if not sections:
             return "No relevant sections found."
-            
+        
         answer = "Based on the NYC Administrative Code:\n\n"
         
         for section in sections[:3]:  # Top 3 sections

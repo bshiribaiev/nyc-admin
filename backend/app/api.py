@@ -4,12 +4,12 @@ from typing import List, Optional
 from datetime import datetime
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Query, Depends
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import redis
 
-from config.settings import REDIS_URL, API_CONFIG
+from config.settings import REDIS_URL
 from app.database import AsyncDatabasePool
 from app.qa_system import QASystem
 
