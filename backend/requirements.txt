@@ -7,8 +7,9 @@ lxml==4.9.3
 psycopg2-binary==2.9.9
 asyncpg==0.29.0
 
-sentence-transformers==2.2.2
-torch==2.0.1  
+sentence-transformers
+huggingface-hub
+torch
 transformers==4.30.0
 
 # API Framework

@@ -65,7 +65,7 @@ class NYCAdminCodeScraper:
         logger.info(f"Found {len(sections)} sections")
         return sections
         
-    def scrape_section(self, section_info: Dict[str, str]) -> Optional[Dict[str]]:
+    def scrape_section(self, section_info: Dict[str, str]) -> Optional[Dict[str, str]]:
         section_number = section_info['section_number']
         url = section_info['url']
         
@@ -126,7 +126,7 @@ class NYCAdminCodeScraper:
                     
         return list(references)
         
-    def save_section(self, section_data: Dict[str]) -> Optional[int]:
+    def save_section(self, section_data: Dict[str, str]) -> Optional[int]:
         try:
             with self.db.get_cursor() as cursor:
                 cursor.execute("""

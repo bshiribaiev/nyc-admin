@@ -25,7 +25,7 @@ class EmbeddingGenerator:
             return SentenceTransformer(model_name)
         except ImportError:
             logger.warning("Sentence Transformers not available")
-        
+                
     def chunk_text(self, text: str) -> List[str]:
         if not text:
             return []
@@ -126,3 +126,20 @@ class EmbeddingGenerator:
                     """, (section_id, i, chunk, embedding.tolist()))
                     
             logger.info(f"Processed {len(chunks)} chunks for section {section_id}")
+            
+    def process_all_sections(self):
+        if not self.db:
+            raise RuntimeError("Database manager not configured")
+
+        with self.db.get_cursor() as cursor:
+            # Get all section IDs
+            cursor.execute("SELECT id FROM sections ORDER BY id")
+            section_ids = [row['id'] for row in cursor.fetchall()]
+
+            logger.info(f"Found {len(section_ids)} sections to process.")
+
+            for section_id in section_ids:
+                logger.info(f"--- Processing section ID: {section_id} ---")
+                self.process_section(section_id)
+
+            logger.info("Finished processing all sections.")
