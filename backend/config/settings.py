@@ -11,7 +11,7 @@ DATABASE_CONFIG = {
     "port": int(os.getenv("DB_PORT", 5432)),
     "database": os.getenv("DB_NAME", "nyc_admin"),
     "user": os.getenv("DB_USER", "nyc_user"),
-    "password": os.getenv("DB_PASSWORD", ""),
+    "password": os.getenv("POSTGRES_PASSWORD", ""),
 }
 
 # Redis settings
