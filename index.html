@@ -156,9 +156,9 @@
         });
 
         // Ask example question
-        function askExample(question) {
+        async function askExample(question) {
             questionInput.value = question;
-            askQuestion(question);
+            await askQuestion(question);
         }
 
         // Main function to ask question
@@ -181,28 +181,32 @@
                     })
                 });
 
+                const data = await response.json();
+                console.log('API Response:', data); // Debug log
+
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => null);
-                    throw new Error(errorData?.detail || 'Failed to get answer');
+                    throw new Error(data.detail || 'Failed to get answer');
                 }
 
-                const data = await response.json();
-
                 // Display answer
-                answerContent.innerHTML = formatAnswer(data.answer);
+                answerContent.innerHTML = formatAnswer(data.answer || 'No answer generated');
 
                 // Display sources
-                sourcesContent.innerHTML = data.sources.map(source => `
-                    <div class="bg-white rounded p-4 border border-gray-200">
-                        <h4 class="font-medium text-gray-900">
-                            ${escapeHtml(source.section_number)}: ${escapeHtml(source.title)}
-                        </h4>
-                        <p class="mt-2 text-sm text-gray-600">${escapeHtml(source.excerpt)}</p>
-                    </div>
-                `).join('');
+                if (data.sources && Array.isArray(data.sources)) {
+                    sourcesContent.innerHTML = data.sources.map(source => `
+                        <div class="bg-white rounded p-4 border border-gray-200">
+                            <h4 class="font-medium text-gray-900">
+                                ${escapeHtml(source.section_number || 'Unknown')}: ${escapeHtml(source.title || 'Untitled')}
+                            </h4>
+                            <p class="mt-2 text-sm text-gray-600">${escapeHtml(source.excerpt || 'No excerpt available')}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    sourcesContent.innerHTML = '<p class="text-gray-600">No sources available</p>';
+                }
 
                 // Display query time
-                queryTime.textContent = data.query_time.toFixed(2);
+                queryTime.textContent = (data.query_time || 0).toFixed(2);
 
                 // Show results
                 loading.classList.add('hidden');
