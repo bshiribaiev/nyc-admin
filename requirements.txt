@@ -1,0 +1,4 @@
+google-generativeai
+httpx
+beautifulsoup4
+dotenv
