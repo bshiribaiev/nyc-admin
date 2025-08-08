@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS section_chunks (
     section_id INTEGER REFERENCES sections(id) ON DELETE CASCADE,
     chunk_index INTEGER,
     chunk_text TEXT,
-    embedding vector(1536),  -- OpenAI embedding size
+    embedding vector(384),  -- Sentence Transformer (all-MiniLM-L6-v2) embedding size
     metadata JSONB DEFAULT '{}'::jsonb,
     UNIQUE(section_id, chunk_index)
 );
@@ -145,6 +145,19 @@ class AsyncDatabasePool:
         if self.pool:
             await self.pool.close()
             logger.info("Database pool closed")
+    
+    # Add async context manager support
+    async def __aenter__(self):
+        """Enter the async context manager - returns self for use with 'async with'"""
+        if not self.pool:
+            raise RuntimeError("Database pool not initialized. Call initialize() first.")
+        return self
+    
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Exit the async context manager - no cleanup needed here"""
+        # We don't close the pool here because it should persist across requests
+        # The pool will be closed when the application shuts down
+        return False
             
     # Acquire connection from the pool        
     @asynccontextmanager

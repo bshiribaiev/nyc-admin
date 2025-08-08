@@ -34,6 +34,34 @@ def init_db():
     db.close()
     
     logger.info("Database initialized successfully")
+    
+@cli.command()
+def reset_db():
+    """Drops all tables and re-initializes the schema."""
+    if input("Are you sure you want to drop all data? (y/n): ").lower() != 'y':
+        print("Aborted.")
+        return
+
+    logger.info("Dropping all database tables...")
+    db = DatabaseManager()
+    db.connect()
+    
+    try:
+        with db.get_cursor() as cursor:
+            # Drop tables in order to respect foreign key constraints
+            cursor.execute("""
+                DROP TABLE IF EXISTS query_logs, scrape_history, 
+                                 cross_references, section_chunks, sections CASCADE;
+            """)
+        logger.info("Tables dropped successfully.")
+        
+        # Re-initialize the schema
+        db.initialize_schema()
+        
+    finally:
+        db.close()
+    
+    logger.info("Database has been reset.")
 
 @cli.command()
 @click.option('--full', is_flag=True, help='Run full scrape')
@@ -122,6 +150,30 @@ async def ask(question: str):
             
     finally:
         await db_pool.close()
+
+@cli.command()
+def check_coverage():
+    """Check scraping coverage"""
+    db = DatabaseManager()
+    db.connect()
+    try:
+        scraper = NYCAdminCodeScraper(db)
+        scraper.verify_coverage()
+    finally:
+        db.close()
+
+@cli.command()
+def test_scrape():
+    logger.info("Running test scrape...")
+    
+    db = DatabaseManager()
+    db.connect()
+    
+    try:
+        scraper = NYCAdminCodeScraper(db)
+        scraper.run_test_scrape()
+    finally:
+        db.close()
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "ask":
