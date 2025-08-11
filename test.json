@@ -1,0 +1,19 @@
+[
+    {
+      "query": "What is the effect on zoning resolution?",
+      "must_contain_sections": ["§ 28-101.4.5.3"]
+    },
+    {
+      "query": "When can emergency work proceed without a permit?",
+      "must_contain_sections": ["§ 28-105.4.1"]
+    },
+    {
+      "query": "Under what circumstances is a sidewalk shed required?",
+      "must_contain_sections": ["3307.6.2"]
+    },
+    {
+      "query": "What is the definition of “hotel” under the zoning resolution?",
+      "expect_no_answer": true
+    }
+  ]
+  
