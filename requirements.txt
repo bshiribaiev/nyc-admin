@@ -2,3 +2,7 @@ google-generativeai
 httpx
 beautifulsoup4
 dotenv
+python-dotenv
+fastapi
+uvicorn[standard]
+pydantic

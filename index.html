@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Admin Code Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .search-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+        }
+
+        .search-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            align-self: flex-start;
+        }
+
+        .search-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .examples {
+            margin-top: 1rem;
+        }
+
+        .examples h3 {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .example-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .example-btn {
+            background: #f8f9fa;
+            border: 1px solid #e1e5e9;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .example-btn:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .answer {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .answer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .answer a:hover {
+            text-decoration: underline;
+        }
+
+        .metadata {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .meta-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .meta-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .sections {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            margin: 0.2rem;
+        }
+
+        .error {
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            color: #c53030;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .no-answer {
+            background: #fffbf0;
+            border: 1px solid #fbd38d;
+            color: #c05621;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .debug-info {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .debug-toggle {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline;
+        }
+
+        .debug-content {
+            display: none;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .search-container {
+                padding: 1.5rem;
+            }
+
+            .metadata {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏛️ NYC Admin Code Assistant</h1>
+            <p class="subtitle">Get instant answers about New York City Administrative Code</p>
+        </header>
+
+        <div class="search-container">
+            <form class="search-form" id="searchForm">
+                <input 
+                    type="text" 
+                    id="queryInput" 
+                    class="search-input" 
+                    placeholder="Ask about NYC Administrative Code (e.g., 'What are the effects of zoning resolution?')"
+                    autocomplete="off"
+                >
+                <button type="submit" class="search-button" id="searchButton">
+                    🔍 Search Admin Code
+                </button>
+            </form>
+
+            <div class="examples">
+                <h3>Try these examples:</h3>
+                <div class="example-buttons">
+                    <button class="example-btn" onclick="setQuery('What are the effects of zoning resolution?')">Zoning Effects</button>
+                    <button class="example-btn" onclick="setQuery('What permits are required for emergency work?')">Emergency Work Permits</button>
+                    <button class="example-btn" onclick="setQuery('What are the requirements for sidewalk sheds?')">Sidewalk Sheds</button>
+                    <button class="example-btn" onclick="setQuery('When do I need a building permit?')">Building Permits</button>
+                    <button class="example-btn" onclick="setQuery('What does section 28-108.1 say?')">Specific Section</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Searching NYC Administrative Code...</p>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const searchForm = document.getElementById('searchForm');
+        const queryInput = document.getElementById('queryInput');
+        const searchButton = document.getElementById('searchButton');
+        const loading = document.getElementById('loading');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultContent = document.getElementById('resultContent');
+
+        function setQuery(query) {
+            queryInput.value = query;
+            queryInput.focus();
+        }
+
+        function showLoading() {
+            loading.style.display = 'block';
+            resultContainer.style.display = 'none';
+            searchButton.disabled = true;
+            searchButton.textContent = '🔍 Searching...';
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+            searchButton.disabled = false;
+            searchButton.textContent = '🔍 Search Admin Code';
+        }
+
+        function displayResult(data) {
+            resultContainer.style.display = 'block';
+            
+            if (!data.success) {
+                resultContent.innerHTML = `
+                    <div class="error">
+                        <strong>Error:</strong> ${data.error}
+                    </div>
+                `;
+                return;
+            }
+
+            if (data.answer === 'NO_ANSWER') {
+                resultContent.innerHTML = `
+                    <div class="no-answer">
+                        <strong>No Answer Found</strong><br>
+                        Sorry, I couldn't find relevant information in the NYC Administrative Code for your query.
+                        Try rephrasing your question or using different keywords.
+                    </div>
+                    ${getDebugInfo(data)}
+                `;
+                return;
+            }
+
+            // Convert URLs in answer to clickable links
+            const answerWithLinks = data.answer.replace(
+                /\[([^\]]+)\]/g, 
+                '<a href="$1" target="_blank">📖 View Section</a>'
+            );
+
+            resultContent.innerHTML = `
+                <div class="answer">${answerWithLinks}</div>
+                
+                <div class="metadata">
+                    <div class="meta-item">
+                        <div class="meta-value">${data.sections_found.length}</div>
+                        <div class="meta-label">Sections Found</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-value">${data.snippets_used}</div>
+                        <div class="meta-label">Sources Used</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-value">${data.response_time}s</div>
+                        <div class="meta-label">Response Time</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-value">${data.urls_processed}/${data.urls_found}</div>
+                        <div class="meta-label">URLs Processed</div>
+                    </div>
+                </div>
+
+                ${data.sections_found.length > 0 ? `
+                    <div class="sections">
+                        <strong>Code Sections Referenced:</strong><br>
+                        ${data.sections_found.map(section => `<span class="section-tag">§ ${section}</span>`).join('')}
+                    </div>
+                ` : ''}
+
+                ${getDebugInfo(data)}
+            `;
+        }
+
+        function getDebugInfo(data) {
+            if (!data.debug_info) return '';
+            
+            return `
+                <div class="debug-info">
+                    <button class="debug-toggle" onclick="toggleDebug()">🔧 Show Debug Info</button>
+                    <div class="debug-content" id="debugContent">
+                        <strong>Snippets Used:</strong><br>
+                        ${data.debug_info.snippets.map(s => `
+                            <div style="margin: 0.5rem 0; padding: 0.5rem; background: white; border-radius: 4px;">
+                                <strong>${s.section}</strong> (Score: ${s.score})<br>
+                                <small>${s.title}</small><br>
+                                <a href="${s.url}" target="_blank" style="font-size: 0.8rem;">View Source</a>
+                            </div>
+                        `).join('')}
+                        
+                        ${data.debug_info.failed_urls.length > 0 ? `
+                            <br><strong>Failed URLs:</strong><br>
+                            ${data.debug_info.failed_urls.map(url => `<small>${url}</small>`).join('<br>')}
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleDebug() {
+            const debugContent = document.getElementById('debugContent');
+            debugContent.style.display = debugContent.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function search() {
+            const query = queryInput.value.trim();
+            if (!query) {
+                alert('Please enter a question');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const response = await fetch('/api/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                displayResult(data);
+            } catch (error) {
+                resultContainer.style.display = 'block';
+                resultContent.innerHTML = `
+                    <div class="error">
+                        <strong>Network Error:</strong> ${error.message}<br>
+                        Please check if the FastAPI backend is running on port 8000.
+                    </div>
+                `;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            search();
+        });
+
+        // Focus on input when page loads
+        queryInput.focus();
+
+        // Handle Enter key in input
+        queryInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchForm.dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>
