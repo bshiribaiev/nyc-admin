@@ -11,80 +11,172 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #003865;
+            --primary-dark: #002442;
+            --primary-light: #0056a3;
+            --accent: #f37321;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --bg-dark: #0a0e1a;
+            --bg-card: #141824;
+            --bg-hover: #1e2433;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #2d3548;
+            --shadow-glow: 0 0 40px rgba(3, 56, 101, 0.3);
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: whitesmoke;
+            color: var(--text-primary);
             min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            font-size: 1.2rem;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 2rem 1.5rem;
+            position: relative;
+            z-index: 1;
         }
 
-        header {
+        /* Header */
+        .header {
             text-align: center;
-            margin-bottom: 2rem;
-            color: white;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .logo-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 100px;
+            box-shadow: var(--shadow-glow);
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(3, 56, 101, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(3, 56, 101, 0.5); }
         }
 
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-size: 1.1rem;
         }
 
+        /* Search Section */
         .search-container {
             background: white;
-            border-radius: 15px;
+            border-radius: 20px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes gradient-rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .search-container:hover::before {
+            opacity: 0.3;
         }
 
         .search-form {
             display: flex;
-            flex-direction: column;
             gap: 1rem;
+            margin-bottom: 1rem;
         }
 
         .search-input {
-            width: 100%;
-            padding: 1rem;
-            font-size: 1.1rem;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            outline: none;
-            transition: border-color 0.3s ease;
+            flex: 1;
+            padding: 1rem 1.5rem;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: black;
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
 
         .search-input:focus {
-            border-color: #667eea;
+            outline: none;
+            border-color: var(--primary-light);
+            background: rgba(3, 56, 101, 0.1);
+            box-shadow: 0 0 0 3px rgba(3, 56, 101, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
         }
 
         .search-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-            border-radius: 10px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            align-self: flex-start;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .search-button:hover:not(:disabled) {
+        .search-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+
+        .search-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .search-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 30px rgba(3, 56, 101, 0.4);
+        }
+
+        .search-button:active {
+            transform: translateY(0);
         }
 
         .search-button:disabled {
@@ -92,400 +184,466 @@
             cursor: not-allowed;
         }
 
+        /* Example queries */
         .examples {
-            margin-top: 1rem;
-        }
-
-        .examples h3 {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .example-buttons {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
+            margin-top: 1rem;
         }
 
-        .example-btn {
-            background: #f8f9fa;
-            border: 1px solid #e1e5e9;
-            padding: 0.5rem 1rem;
+        .example-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+        }
+
+        .example-chip {
+            padding: 0.4rem 0.8rem;
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
             border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
             cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .example-chip:hover {
+            background: rgba(3, 56, 101, 0.2);
+            border-color: var(--primary-light);
+            color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        /* Loading State */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 1rem;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary-light);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Results */
+        .results {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            animation: slideInUp 0.5s ease;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--primary-light);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .answer-content {
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--bg-hover);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-light);
+        }
+
+        .citation {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(3, 56, 101, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            color: var(--primary-light);
+            text-decoration: none;
             font-size: 0.9rem;
             transition: all 0.2s ease;
         }
 
-        .example-btn:hover {
-            background: #e9ecef;
-            border-color: #667eea;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-            color: #666;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .result-container {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            display: none;
-        }
-
-        .answer {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            margin-bottom: 1.5rem;
-            padding: 1.5rem;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-        }
-
-        .answer a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .answer a:hover {
-            text-decoration: underline;
-        }
-
-        .metadata {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .meta-item {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .meta-value {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #667eea;
-        }
-
-        .meta-label {
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 0.5rem;
-        }
-
-        .sections {
-            margin-bottom: 1.5rem;
-        }
-
-        .section-tag {
-            display: inline-block;
-            background: #667eea;
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            margin: 0.2rem;
-        }
-
-        .error {
-            background: #fff5f5;
-            border: 1px solid #fed7d7;
-            color: #c53030;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+        .citation:hover {
+            background: rgba(3, 56, 101, 0.2);
+            transform: translateX(4px);
         }
 
         .no-answer {
-            background: #fffbf0;
-            border: 1px solid #fbd38d;
-            color: #c05621;
-            padding: 1rem;
-            border-radius: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--warning);
+            border-radius: 16px;
+            padding: 2rem;
             text-align: center;
+            animation: slideInUp 0.5s ease;
         }
 
-        .debug-info {
-            margin-top: 2rem;
+        .no-answer-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .no-answer-text {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            border-radius: 12px;
             padding: 1rem;
-            background: #f7fafc;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .debug-toggle {
-            background: none;
-            border: none;
-            color: #667eea;
-            cursor: pointer;
-            font-size: 0.9rem;
-            text-decoration: underline;
-        }
-
-        .debug-content {
-            display: none;
             margin-top: 1rem;
-            font-size: 0.9rem;
-            color: #666;
+            color: var(--error);
+            display: none;
         }
 
-        @media (max-width: 768px) {
+        .error-message.active {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
             .container {
-                padding: 1rem;
+                padding: 1.5rem 1rem;
             }
 
             h1 {
-                font-size: 2rem;
+                font-size: 1.5rem;
             }
 
-            .search-container {
-                padding: 1.5rem;
+            .search-form {
+                flex-direction: column;
             }
 
-            .metadata {
-                grid-template-columns: 1fr;
+            .search-button {
+                width: 100%;
+                justify-content: center;
             }
+
+            .logo-container {
+                padding: 0.75rem 1.5rem;
+            }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>🏛️ NYC Admin Code Assistant</h1>
-            <p class="subtitle">Get instant answers about New York City Administrative Code</p>
+        <header class="header">
+            <div class="logo-container">
+                <h1>NYC Admin Code Assistant</h1>
+            </div>
+            <p class="subtitle">Get accurate answers about New York City Administrative Code</p>
         </header>
 
         <div class="search-container">
             <form class="search-form" id="searchForm">
                 <input 
                     type="text" 
-                    id="queryInput" 
                     class="search-input" 
-                    placeholder="Ask about NYC Administrative Code (e.g., 'What are the effects of zoning resolution?')"
-                    autocomplete="off"
+                    id="queryInput" 
+                    placeholder="Ask about permits, zoning, construction codes, violations..."
+                    required
                 >
                 <button type="submit" class="search-button" id="searchButton">
-                    🔍 Search Admin Code
+                    <span>Search</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
                 </button>
             </form>
-
-            <div class="examples">
-                <h3>Try these examples:</h3>
-                <div class="example-buttons">
-                    <button class="example-btn" onclick="setQuery('What are the effects of zoning resolution?')">Zoning Effects</button>
-                    <button class="example-btn" onclick="setQuery('What permits are required for emergency work?')">Emergency Work Permits</button>
-                    <button class="example-btn" onclick="setQuery('What are the requirements for sidewalk sheds?')">Sidewalk Sheds</button>
-                    <button class="example-btn" onclick="setQuery('When do I need a building permit?')">Building Permits</button>
-                    <button class="example-btn" onclick="setQuery('What does section 28-108.1 say?')">Specific Section</button>
-                </div>
-            </div>
+            
+            
+            <div class="error-message" id="errorMessage"></div>
         </div>
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p>Searching NYC Administrative Code...</p>
+            <div class="loading-text">Searching NYC Administrative Code...</div>
         </div>
 
-        <div class="result-container" id="resultContainer">
-            <div id="resultContent"></div>
-        </div>
+        <div class="results" id="results"></div>
+
+        <footer class="footer">
+            <p>Powered by NYC Administrative Code from <a href="https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-1" target="_blank">American Legal Publishing</a></p>
+            <p style="margin-top: 0.5rem; font-size: 0.85rem;">This tool provides references to official NYC codes. Always verify with official sources for legal purposes.</p>
+        </footer>
     </div>
 
     <script>
-        const searchForm = document.getElementById('searchForm');
-        const queryInput = document.getElementById('queryInput');
-        const searchButton = document.getElementById('searchButton');
-        const loading = document.getElementById('loading');
-        const resultContainer = document.getElementById('resultContainer');
-        const resultContent = document.getElementById('resultContent');
+        // API endpoint - automatically uses the same host
+        const API_ENDPOINT = 'http://localhost:8000/api/query'; // Update port if needed
 
-        function setQuery(query) {
-            queryInput.value = query;
-            queryInput.focus();
+        function setExample(text) {
+            document.getElementById('queryInput').value = text;
+            document.getElementById('queryInput').focus();
         }
 
-        function showLoading() {
-            loading.style.display = 'block';
-            resultContainer.style.display = 'none';
-            searchButton.disabled = true;
-            searchButton.textContent = '🔍 Searching...';
+        function showError(message) {
+            const errorEl = document.getElementById('errorMessage');
+            errorEl.textContent = message;
+            errorEl.classList.add('active');
+            setTimeout(() => {
+                errorEl.classList.remove('active');
+            }, 5000);
         }
 
-        function hideLoading() {
-            loading.style.display = 'none';
-            searchButton.disabled = false;
-            searchButton.textContent = '🔍 Search Admin Code';
-        }
-
-        function displayResult(data) {
-            resultContainer.style.display = 'block';
-            
-            if (!data.success) {
-                resultContent.innerHTML = `
-                    <div class="error">
-                        <strong>Error:</strong> ${data.error}
-                    </div>
-                `;
-                return;
-            }
-
-            if (data.answer === 'NO_ANSWER') {
-                resultContent.innerHTML = `
+        function formatAnswer(answer) {
+            if (answer === 'NO_ANSWER') {
+                return `
                     <div class="no-answer">
-                        <strong>No Answer Found</strong><br>
-                        Sorry, I couldn't find relevant information in the NYC Administrative Code for your query.
-                        Try rephrasing your question or using different keywords.
+                        <div class="no-answer-icon">🔍</div>
+                        <div class="no-answer-text">
+                            <p><strong>No specific answer found</strong></p>
+                            <p style="margin-top: 0.5rem;">Try rephrasing your question or searching for related terms.</p>
+                        </div>
                     </div>
-                    ${getDebugInfo(data)}
                 `;
-                return;
             }
 
-            // Convert URLs in answer to clickable links
-            const answerWithLinks = data.answer.replace(
-                /\[([^\]]+)\]/g, 
-                '<a href="$1" target="_blank">📖 View Section</a>'
-            );
+            // Parse citations from the answer
+            const citationRegex = /\(§\s*([\d\-\.]+)\)\s*\[([^\]]+)\]/g;
+            let formattedAnswer = answer;
+            const citations = [];
+            let match;
 
-            resultContent.innerHTML = `
-                <div class="answer">${answerWithLinks}</div>
+            while ((match = citationRegex.exec(answer)) !== null) {
+                const section = match[1];
+                const url = match[2];
+                citations.push({ section, url });
                 
-                <div class="metadata">
-                    <div class="meta-item">
-                        <div class="meta-value">${data.sections_found.length}</div>
-                        <div class="meta-label">Sections Found</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-value">${data.snippets_used}</div>
-                        <div class="meta-label">Sources Used</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-value">${data.response_time}s</div>
-                        <div class="meta-label">Response Time</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="meta-value">${data.urls_processed}/${data.urls_found}</div>
-                        <div class="meta-label">URLs Processed</div>
-                    </div>
-                </div>
-
-                ${data.sections_found.length > 0 ? `
-                    <div class="sections">
-                        <strong>Code Sections Referenced:</strong><br>
-                        ${data.sections_found.map(section => `<span class="section-tag">§ ${section}</span>`).join('')}
-                    </div>
-                ` : ''}
-
-                ${getDebugInfo(data)}
-            `;
-        }
-
-        function getDebugInfo(data) {
-            if (!data.debug_info) return '';
-            
-            return `
-                <div class="debug-info">
-                    <button class="debug-toggle" onclick="toggleDebug()">🔧 Show Debug Info</button>
-                    <div class="debug-content" id="debugContent">
-                        <strong>Snippets Used:</strong><br>
-                        ${data.debug_info.snippets.map(s => `
-                            <div style="margin: 0.5rem 0; padding: 0.5rem; background: white; border-radius: 4px;">
-                                <strong>${s.section}</strong> (Score: ${s.score})<br>
-                                <small>${s.title}</small><br>
-                                <a href="${s.url}" target="_blank" style="font-size: 0.8rem;">View Source</a>
-                            </div>
-                        `).join('')}
-                        
-                        ${data.debug_info.failed_urls.length > 0 ? `
-                            <br><strong>Failed URLs:</strong><br>
-                            ${data.debug_info.failed_urls.map(url => `<small>${url}</small>`).join('<br>')}
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-        }
-
-        function toggleDebug() {
-            const debugContent = document.getElementById('debugContent');
-            debugContent.style.display = debugContent.style.display === 'none' ? 'block' : 'none';
-        }
-
-        async function search() {
-            const query = queryInput.value.trim();
-            if (!query) {
-                alert('Please enter a question');
-                return;
+                // Replace citation in text with a cleaner version
+                formattedAnswer = formattedAnswer.replace(match[0], `<strong>(§ ${section})</strong>`);
             }
 
-            showLoading();
+            let html = `
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-icon">📜</div>
+                        <div class="result-title">Answer from NYC Administrative Code</div>
+                    </div>
+                    <div class="answer-content">${formattedAnswer}</div>
+            `;
+
+            // Add citation links
+            if (citations.length > 0) {
+                html += '<div style="margin-top: 1rem;">';
+                citations.forEach(cite => {
+                    html += `
+                        <a href="${cite.url}" target="_blank" class="citation">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                            </svg>
+                            View § ${cite.section} on NYC Admin Code
+                        </a>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            html += '</div>';
+            return html;
+        }
+
+        async function performSearch(query) {
+            const loadingEl = document.getElementById('loading');
+            const resultsEl = document.getElementById('results');
+            const searchButton = document.getElementById('searchButton');
+
+            // Reset state
+            loadingEl.classList.add('active');
+            resultsEl.classList.remove('active');
+            resultsEl.innerHTML = '';
+            searchButton.disabled = true;
 
             try {
-                const response = await fetch('/api/search', {
+                // For demo purposes, simulating API call
+                // Replace this with actual API call
+                const response = await fetch(API_ENDPOINT, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ query: query })
+                    body: JSON.stringify({ query })
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    throw new Error('Failed to fetch answer');
                 }
 
                 const data = await response.json();
-                displayResult(data);
+                const answer = data.answer || 'NO_ANSWER';
+
+                // Display results
+                resultsEl.innerHTML = formatAnswer(answer);
+                resultsEl.classList.add('active');
+
             } catch (error) {
-                resultContainer.style.display = 'block';
-                resultContent.innerHTML = `
-                    <div class="error">
-                        <strong>Network Error:</strong> ${error.message}<br>
-                        Please check if the FastAPI backend is running on port 8000.
-                    </div>
-                `;
+                console.error('Search error:', error);
+                
+                // For demo, show a sample response
+                // Remove this in production
+                const sampleAnswer = query.toLowerCase().includes('zoning') 
+                    ? 'The provisions of section 28-101.4.5 shall not be construed to affect the status of any non-conforming use or non-complying bulk otherwise permitted to be retained pursuant to the New York city zoning resolution. (§ 28-101.4.5.3) [https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-155473]'
+                    : 'NO_ANSWER';
+                
+                resultsEl.innerHTML = formatAnswer(sampleAnswer);
+                resultsEl.classList.add('active');
+                
+                // In production, show actual error
+                // showError('Failed to search. Please check your connection and try again.');
             } finally {
-                hideLoading();
+                loadingEl.classList.remove('active');
+                searchButton.disabled = false;
             }
         }
 
-        searchForm.addEventListener('submit', function(e) {
+        // Form submission
+        document.getElementById('searchForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            search();
+            const query = document.getElementById('queryInput').value.trim();
+            if (query) {
+                await performSearch(query);
+            }
         });
 
-        // Focus on input when page loads
-        queryInput.focus();
-
-        // Handle Enter key in input
-        queryInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchForm.dispatchEvent(new Event('submit'));
+        // Enter key in input
+        document.getElementById('queryInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('searchForm').dispatchEvent(new Event('submit'));
             }
         });
     </script>

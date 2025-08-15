@@ -227,7 +227,7 @@ def drilldown_toc_candidates(q: str, max_urls: int = 10) -> list[str]:
         for a in soup.find_all("a", href=True):
             href = a["href"]
             if not href.startswith("http"):
-                href = httpx.URL(idx_url).join(href).human_repr()
+                href = str(httpx.URL(idx_url).join(href))
             
             if not href.startswith("https://codelibrary.amlegal.com/codes/newyorkcity/"):
                 continue
