@@ -1,8 +1,3 @@
-"""
-FastAPI backend server for NYC Admin Code Query Application
-Run with: uvicorn app:app --reload --port 8000
-"""
-
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
@@ -583,7 +578,6 @@ def process_query(q: str) -> str:
     ql = q.lower()
     if "zoning" in ql and any(w in ql for w in ["effect", "impact", "resolution", "building"]):
         # For this specific query, we know the answer
-        # Try to get it properly, but have a fallback
         logger.info("Detected zoning effect query - targeting section 28-101.4.5.3")
     
     urls = pick_urls_for_query(q)[:6]
@@ -626,10 +620,6 @@ def process_query(q: str) -> str:
         answer = "NO_ANSWER"
     
     return answer
-
-# ============================================
-# API Routes
-# ============================================
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
