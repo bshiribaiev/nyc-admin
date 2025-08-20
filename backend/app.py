@@ -621,12 +621,6 @@ def process_query(q: str) -> str:
     
     return answer
 
-@app.get("/", response_class=HTMLResponse)
-async def root():
-    """Serve the frontend HTML"""
-    with open("index.html", "r") as f:
-        return f.read()
-
 @app.post("/api/query", response_model=QueryResponse)
 async def query_endpoint(request: QueryRequest):
     """Process a query about NYC Admin Code"""
