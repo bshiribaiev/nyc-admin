@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 
 // API endpoint
-const API_ENDPOINT = 'http://localhost:8000/api/query';
+const API_ENDPOINT = 'https://nyc-admin-59c5.onrender.com/api/query';
 
 // Helper component for displaying the results
 const Results = ({ data }) => {
